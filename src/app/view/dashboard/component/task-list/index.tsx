@@ -43,14 +43,6 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
       taskListStore.getTaskListByNav(navListStore.currentNav);
   }, [navListStore.currentNavId]);
 
-  useEffect(() => {
-    const task = taskListStore.list.find((x) => x.id === 1717732684144);
-    console.log(task);
-    if (task) {
-      task.update({ duration: 7209 });
-    }
-  }, [taskListStore.list]);
-
   return (
     <div className={className}>
       {finalTaskList.map((x) => (

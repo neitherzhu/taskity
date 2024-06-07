@@ -14,12 +14,12 @@ const Duration = () => {
   const [loading, setLoading] = useState(true);
 
   const handlePause = () => {
-    taskInProgressStore.setTicking(false);
+    taskInProgressStore.stop();
     taskInProgressStore.currentTask.update({ duration: count });
   };
 
   const handleStart = () => {
-    taskInProgressStore.setTicking(true);
+    taskInProgressStore.start(taskInProgressStore.id);
   };
 
   useEffect(() => {
@@ -34,25 +34,27 @@ const Duration = () => {
   }, []);
 
   useEffect(() => {
-    window.electron.timers.stop();
-
-    if (taskInProgressStore.ticking) {
-      setCount(taskInProgressStore.currentTask.duration);
-      window.electron.timers.start();
-      window.electron.timers.counting(() => {
-        setCount((c) => {
-          return c + 1;
-        });
+    window.electron.timers.counting(() => {
+      setCount((c) => {
+        return c + 1;
       });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (taskInProgressStore.ticking) {
+      taskInProgressStore.currentTask &&
+        setCount(taskInProgressStore.currentTask.duration);
+      window.electron.timers.start();
+    } else {
+      window.electron.timers.stop();
     }
   }, [taskInProgressStore.ticking, taskInProgressStore.currentTask]);
 
   useEffect(() => {
     if (!count || !taskInProgressStore.currentTask) return;
 
-    if (count % 5 === 0) {
-      taskInProgressStore.currentTask.update({ duration: count });
-    }
+    taskInProgressStore.currentTask.update({ duration: count });
   }, [count]);
 
   if (!taskInProgressStore.currentTask) {

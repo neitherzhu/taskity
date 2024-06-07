@@ -25,14 +25,7 @@ export const MaxCounter: React.FC<CounterProps> = observer(
       taskInProgressStore.setSize("small");
     };
     const handleDone = async () => {
-      await taskInProgressStore.setTicking(false);
       await taskListStore.completeTask(taskInProgressStore.id, true);
-
-      const nextTask = taskListStore.list.filter(
-        (x) => x.id !== taskInProgressStore.id && !isCompleted(x.status)
-      )[0];
-
-      taskInProgressStore.setId(nextTask?.id);
     };
     return (
       <div

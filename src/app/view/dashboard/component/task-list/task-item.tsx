@@ -28,10 +28,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, navName, onMove }) => {
   };
   const toggleProgress = () => {
     if (taskInProgressStore.id === task.id && taskInProgressStore.ticking) {
-      taskInProgressStore.setTicking(false);
+      taskInProgressStore.stop();
     } else {
-      taskInProgressStore.setId(task.id);
-      taskInProgressStore.setTicking(true);
+      taskInProgressStore.start(task.id);
     }
   };
   const handleComplete: CheckboxProps["onChange"] = (ev) => {

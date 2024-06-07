@@ -1,6 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 const StoreUtil = {
   get (key: string) {
@@ -17,7 +17,7 @@ const TimerUtil = {
   },
   stop: () => {
     ipcRenderer.send('stop-timer')
-    ipcRenderer.removeAllListeners('timer-counting')
+    // ipcRenderer.removeAllListeners('timer-counting')
   },
   counting: (callback: () => void) => ipcRenderer.on('timer-counting', callback)
 }

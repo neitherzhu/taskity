@@ -1,23 +1,18 @@
-import { action, computed, makeAutoObservable, observable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 import { recordMapService } from '@app/service';
 
 import Task from './task';
 import taskListStore from './task-list';
 
-let thickingId = 0
 export class TaskInProgress {
   @observable id = 0
   @observable ticking = false
   @observable size = 'large'
+  currentTask: Task
 
   constructor () {
     makeAutoObservable(this)
-  }
-
-  @computed
-  get currentTask (): Task | undefined {
-    return taskListStore.list.find(x => x.id === this.id)
   }
 
   @action
@@ -26,35 +21,29 @@ export class TaskInProgress {
   }
 
   @action
-  setId = (id: number) => {
+  start = async (id: number) => {
+    if (this.ticking) {
+      // 正在计时，并且又开始了一个计时，则应该先停止当前的计时，设置一个stop
+      if (id !== this.id) {
+        await this.stop()
+      }
+    }
+    this.ticking = true
     this.id = id
+    this.currentTask = taskListStore.list.find(x => x.id === id)
+    await recordMapService.addRecord(id, {
+      type: 'start',
+      date: Date.now()
+    })
   }
 
   @action
-  setTicking = async (ticking: boolean) => {
-    if (!this.id) {
-      this.ticking = false
-    } else {
-      // 正在计时，并且又开始了一个计时，则应该先停止当前的计时，设置一个stop
-      if (this.ticking && ticking) {
-        if (this.id !== thickingId) {
-          await recordMapService.addRecord(thickingId, {
-            type: 'stop',
-            date: Date.now()
-          })
-        }
-      }
-      if (ticking) {
-        thickingId = this.id
-      }
-
-      this.ticking = ticking
-
-      await recordMapService.addRecord(this.id, {
-        type: ticking ? 'start' : 'stop',
-        date: Date.now()
-      })
-    }
+  stop = async () => {
+    await recordMapService.addRecord(this.id, {
+      type: 'stop',
+      date: Date.now()
+    })
+    this.ticking = false
   }
 }
 

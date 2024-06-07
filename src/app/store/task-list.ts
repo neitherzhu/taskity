@@ -63,8 +63,7 @@ export class TaskList {
     this.list = this.list.filter(x => x.id !== id)
     // 如果是正在计时的任务，则需要停止任务
     if (taskInProgress.id === id) {
-      taskInProgress.setId(0)
-      taskInProgress.setTicking(false)
+      taskInProgress.stop()
     }
   }
 
@@ -82,8 +81,7 @@ export class TaskList {
       id === store.taskInProgressStore.id &&
       store.taskInProgressStore.ticking
     ) {
-      store.taskInProgressStore.setId(0)
-      store.taskInProgressStore.setTicking(false)
+      store.taskInProgressStore.stop()
     }
   }
 
