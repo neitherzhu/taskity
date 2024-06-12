@@ -1,5 +1,7 @@
 import { BrowserWindow } from 'electron'
 
+import { behaviorTracker, stopBehaviorTracker } from './'
+
 let _timer: NodeJS.Timeout
 
 export const startTimer = (mainWindow: BrowserWindow) => {
@@ -10,10 +12,12 @@ export const startTimer = (mainWindow: BrowserWindow) => {
   _timer = setInterval(() => {
     mainWindow.webContents.send('timer-counting')
   }, 1000)
+  behaviorTracker(mainWindow)
 }
 
 export const stopTimer = () => {
   if (_timer) {
     clearInterval(_timer)
   }
+  stopBehaviorTracker()
 }

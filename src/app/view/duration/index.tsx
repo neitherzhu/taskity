@@ -1,21 +1,21 @@
-import { Spin } from 'antd';
-import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { Spin } from "antd";
+import { observer } from "mobx-react-lite";
+import { useEffect, useRef, useState } from "react";
 
-import { useStore } from '@app/hooks';
+import { useStore } from "@app/hooks";
 
-import { MaxCounter, MinCounter } from './component/counter';
-import styles from './index.module.less';
+import { MaxCounter, MinCounter } from "./component/counter";
+import styles from "./index.module.less";
 
 const Duration = () => {
   const { taskInProgressStore } = useStore();
   const [wallpaper, setWallpaper] = useState("");
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const countRef = useRef(0);
   const handlePause = () => {
     taskInProgressStore.stop();
-    taskInProgressStore.currentTask.update({ duration: count });
+    taskInProgressStore.currentTask.update({ duration: countRef.current });
   };
 
   const handleStart = () => {
@@ -36,6 +36,7 @@ const Duration = () => {
   useEffect(() => {
     window.electron.timers.counting(() => {
       setCount((c) => {
+        countRef.current = c + 1;
         return c + 1;
       });
     });
@@ -43,8 +44,10 @@ const Duration = () => {
 
   useEffect(() => {
     if (taskInProgressStore.ticking) {
-      taskInProgressStore.currentTask &&
+      if (taskInProgressStore.currentTask) {
+        countRef.current = taskInProgressStore.currentTask.duration;
         setCount(taskInProgressStore.currentTask.duration);
+      }
       window.electron.timers.start();
     } else {
       window.electron.timers.stop();
