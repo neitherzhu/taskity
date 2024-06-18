@@ -1,21 +1,22 @@
-import { Tooltip } from 'antd';
-import { RangePickerProps } from 'antd/es/date-picker';
-import classnames from 'classnames';
-import dayjs from 'dayjs';
-import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { Tooltip } from "antd";
+import { RangePickerProps } from "antd/es/date-picker";
+import classnames from "classnames";
+import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
+import { useEffect, useState } from "react";
 
-import { useVisibility } from '@app/hooks';
-import { recordMapService, taskListService } from '@app/service';
-import { BaseTask, RecordMap } from '@app/types';
-import { formatterRecordMap } from '@app/util';
-import { CircleStatisticsLine, DownLine } from '@xm/icons-taskity/dist/react';
+import { useVisibility } from "@app/hooks";
+import { recordMapService, taskListService } from "@app/service";
+import { BaseTask, RecordMap } from "@app/types";
+import { formatterRecordMap } from "@app/util";
+import { CircleStatisticsLine, DownLine } from "@xm/icons-taskity/dist/react";
 
-import DailyTask from './component/daily-task';
-import DatePicker from './component/date-picker';
-import NavRecord from './component/nav-record';
+import DailyTask from "./component/daily-task";
+import DatePicker from "./component/date-picker";
+import NavRecord from "./component/nav-record";
+import WorkHours from "./component/work-hours";
 // import Record from './component/record';
-import styles from './index.module.less';
+import styles from "./index.module.less";
 
 const Statistics = () => {
   const [visible, toggle] = useVisibility(false);
@@ -81,9 +82,16 @@ const Statistics = () => {
             taskList={taskList}
             recordList={recordList}
           /> */}
-          <div className="flex">
+          <div className="flex mt-20">
             <div className="flex-1">
               <NavRecord
+                dates={dates}
+                taskList={taskList}
+                recordMap={rangeRecordMap}
+              />
+            </div>
+            <div className="flex-1">
+              <WorkHours
                 dates={dates}
                 taskList={taskList}
                 recordMap={rangeRecordMap}
