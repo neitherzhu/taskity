@@ -1,9 +1,9 @@
-import { action, computed, makeAutoObservable, observable } from 'mobx';
+import { action, computed, makeAutoObservable, observable } from 'mobx'
 
-import { navListService } from '@app/service';
-import { BaseNav } from '@app/types';
+import { navListService } from '@app/service'
+import { BaseNav } from '@app/types'
 
-import Nav, { UpdateNav } from './nav';
+import Nav, { UpdateNav } from './nav'
 
 export class NavList {
   @observable.shallow list: Nav[] = []

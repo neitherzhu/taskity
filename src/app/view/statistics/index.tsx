@@ -53,13 +53,11 @@ const Statistics = () => {
 
   return (
     <div>
-      <div className={styles.statistics}>
-        <Tooltip title="统计">
-          <span className="flex items-center" onClick={toggle}>
-            <CircleStatisticsLine size={20} />
-          </span>
-        </Tooltip>
-      </div>
+      <Tooltip title="统计">
+        <span className="flex items-center cursor-pointer" onClick={toggle}>
+          <CircleStatisticsLine size={20} />
+        </span>
+      </Tooltip>
       {visible && (
         <div className={classnames(styles.wraper, "bg-white overflow-auto")}>
           <span

@@ -1,7 +1,8 @@
 import { BrowserWindow, powerMonitor } from 'electron'
+import { storage } from './storage'
+import { DEFAULT_SETTING } from '../constant'
 
 let behaviorTrackerTimer: NodeJS.Timeout
-const MAX_STOP = 60 // 10分钟无动作则暂停
 let idleTime: number
 
 // export const behaviorTracker = (mainWindow: BrowserWindow) => {
@@ -28,18 +29,21 @@ let idleTime: number
 //   stopMins = 0
 //   clearTimeout(behaviorTrackerTimer)
 // }
-
-export const behaviorTracker = (mainWindow: BrowserWindow) => {
+const store = storage()
+export const behaviorTracker = async (mainWindow: BrowserWindow) => {
   idleTime = powerMonitor.getSystemIdleTime()
+  const setting = await store.get('setting-ts')
+  const mins =
+    setting.stopWhenNoBehaviorInMiniutes ??
+    DEFAULT_SETTING.stopWhenNoBehaviorInMiniutes
+  if (idleTime > mins * 60) {
+    mainWindow.webContents.send('behavior-change', true)
+    return
+  }
 
   behaviorTrackerTimer = setTimeout(() => {
     behaviorTracker(mainWindow)
-    if (idleTime > MAX_STOP) {
-      mainWindow.webContents.send('behavior-change', true)
-    } else {
-      behaviorTracker(mainWindow)
-    }
-  }, 10000)
+  }, 5000)
 }
 
 export const stopBehaviorTracker = () => {
