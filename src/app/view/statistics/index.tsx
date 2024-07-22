@@ -1,4 +1,5 @@
 import { Tooltip } from "antd";
+import { createPortal } from "react-dom";
 import { RangePickerProps } from "antd/es/date-picker";
 import classnames from "classnames";
 import dayjs from "dayjs";
@@ -58,46 +59,48 @@ const Statistics = () => {
           <CircleStatisticsLine size={20} />
         </span>
       </Tooltip>
-      {visible && (
-        <div className={classnames(styles.wraper, "bg-white overflow-auto")}>
-          <span
-            className={classnames(
-              styles.close,
-              "flex items-center cursor-pointer border-radius"
-            )}
-            onClick={toggle}
-          >
-            <DownLine size={30} />
-          </span>
-          <DatePicker value={dates} onChange={handleDateChange} />
-          <DailyTask
-            dates={dates}
-            taskList={taskList}
-            recordMap={rangeRecordMap}
-          />
-          {/* <Record
+      {visible &&
+        createPortal(
+          <div className={classnames(styles.wraper, "bg-white overflow-auto")}>
+            <span
+              className={classnames(
+                styles.close,
+                "flex items-center cursor-pointer border-radius"
+              )}
+              onClick={toggle}
+            >
+              <DownLine size={30} />
+            </span>
+            <DatePicker value={dates} onChange={handleDateChange} />
+            <DailyTask
+              dates={dates}
+              taskList={taskList}
+              recordMap={rangeRecordMap}
+            />
+            {/* <Record
             navList={navList}
             taskList={taskList}
             recordList={recordList}
           /> */}
-          <div className="flex mt-20">
-            <div className="flex-1">
-              <NavRecord
-                dates={dates}
-                taskList={taskList}
-                recordMap={rangeRecordMap}
-              />
+            <div className="flex mt-20">
+              <div className="flex-1">
+                <NavRecord
+                  dates={dates}
+                  taskList={taskList}
+                  recordMap={rangeRecordMap}
+                />
+              </div>
+              <div className="flex-1">
+                <WorkHours
+                  dates={dates}
+                  taskList={taskList}
+                  recordMap={rangeRecordMap}
+                />
+              </div>
             </div>
-            <div className="flex-1">
-              <WorkHours
-                dates={dates}
-                taskList={taskList}
-                recordMap={rangeRecordMap}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
