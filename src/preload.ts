@@ -3,10 +3,10 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 const StoreUtil = {
-  get (key: string) {
+  get(key: string) {
     return ipcRenderer.sendSync('electron-store-get', key)
   },
-  set (key: string, val: any) {
+  set(key: string, val: any) {
     ipcRenderer.send('electron-store-set', key, val)
   }
 }
@@ -19,7 +19,8 @@ const TimerUtil = {
     ipcRenderer.send('stop-timer')
     // ipcRenderer.removeAllListeners('timer-counting')
   },
-  counting: (callback: () => void) => ipcRenderer.on('timer-counting', callback)
+  counting: (callback: () => void) => ipcRenderer.on('timer-counting', callback),
+  resume: (callback: () => void) => ipcRenderer.on('timer-resume', callback)
 }
 
 contextBridge.exposeInMainWorld('electron', {

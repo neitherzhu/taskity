@@ -13,6 +13,8 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
+let stopTime = 0
+
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -72,6 +74,7 @@ const createWindow = (): void => {
     if (stopWhenLockScreen) {
       mainWindow.webContents.send('behavior-change', true)
     }
+    stopTime = Date.now()
   })
 
   powerMonitor.on('unlock-screen', async () => {
@@ -80,6 +83,12 @@ const createWindow = (): void => {
       setting.startWhenUnlockScreen ?? DEFAULT_SETTING.startWhenUnlockScreen
     if (startWhenUnlockScreen) {
       mainWindow.webContents.send('behavior-change', false)
+    }
+
+    if (stopTime) {
+      const resumeTime = Date.now() - stopTime
+      mainWindow.webContents.send('timer-resume', Math.floor(resumeTime / 1000))
+      stopTime = 0
     }
   })
 }

@@ -1,4 +1,4 @@
-import { Spin } from "antd";
+import { Spin, Modal } from "antd";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,6 +13,8 @@ const Duration = () => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const countRef = useRef(0);
+  const isPausedAutoRef = useRef(false);
+  const autoPausedWhenLock = useRef(false);
   const handlePause = () => {
     taskInProgressStore.stop();
     taskInProgressStore.currentTask.update({ duration: countRef.current });
@@ -25,7 +27,21 @@ const Duration = () => {
   useEffect(() => {
     setLoading(true);
     window.electron.onBehaviorChange((_: any, data: any) => {
-      data ? handlePause() : handleStart();
+      if (!taskInProgressStore.currentTask) return;
+
+      if (data) {
+        if (taskInProgressStore.ticking) {
+          autoPausedWhenLock.current = true;
+          isPausedAutoRef.current = true;
+          handlePause();
+        }
+      } else {
+        // 只有自动停止的任务才会自动开启
+        if (isPausedAutoRef.current && !taskInProgressStore.ticking) {
+          isPausedAutoRef.current = false;
+          handleStart();
+        }
+      }
     });
     window.electron.getWallpaper((_: any, data: string) => {
       setWallpaper(data);
@@ -38,6 +54,21 @@ const Duration = () => {
       setCount((c) => {
         countRef.current = c + 1;
         return c + 1;
+      });
+    });
+    window.electron.timers.resume((_: any, data: number) => {
+      if (!autoPausedWhenLock.current) return;
+      autoPausedWhenLock.current = false;
+      Modal.confirm({
+        centered: true,
+        title: "累加锁屏时间？",
+        content: `当前锁屏时间已累计 ${data} 秒，是否累加到当前任务？`,
+        onOk: () => {
+          setCount((c) => {
+            countRef.current = c + data;
+            return c + data;
+          });
+        },
       });
     });
   }, []);
